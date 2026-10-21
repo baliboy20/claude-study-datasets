@@ -1,0 +1,23 @@
+{
+  "name": "insurance-claims-api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "preload": "node -e \"const fs=require('fs');if(!fs.existsSync('.dev.vars')){fs.copyFileSync('.dev.vars.example','.dev.vars');console.log('Created .dev.vars from .dev.vars.example (example keys, for local use only)')}\"",
+    "load": "wrangler d1 execute insurance_claims --local --persist-to ../db --file ../db/seed.sql",
+    "predev": "node -e \"const fs=require('fs');if(!fs.existsSync('.dev.vars')){fs.copyFileSync('.dev.vars.example','.dev.vars');console.log('Created .dev.vars from .dev.vars.example (example keys, for local use only)')}\"",
+    "dev": "wrangler dev --persist-to ../db",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.13.13"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260702.1",
+    "typescript": "^5.9.3",
+    "wrangler": "4.67.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

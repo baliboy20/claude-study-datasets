@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dataset Method</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<header class="masthead"><div class="wrap"><div class="crumbs"><a data-landing href="../../../index.html">All datasets</a><span>›</span><span>Insurance claims</span><span>›</span><span>How it was built</span></div><h1>How this dataset was built</h1>
+<p class="lead">The method behind the insurance claims dataset: the decisions and their reasons, how the folder is organised,
+the standard it meets, lessons learned, and how to start the next dataset from it.</p>
+<nav class="toc"><a href="#programme">Programme</a><a href="#why">Decisions</a><a href="#where">Folder</a><a href="#how">How</a><a href="#next">Next dataset</a><a href="#standard">Standard</a><a href="#lessons">Lessons</a><a href="#open">Open items</a></nav></div></header>
+<main>
+
+<h2 id="programme">The programme this dataset belongs to</h2>
+<p>Six synthetic datasets for testing and illustrating AI in UK banking, insurance and finance, to be published as studies on
+LinkedIn. The source brief is in <code>brief01/</code> at the project root. Every dataset uses one fictional firm,
+<strong>Thameside Financial Group plc</strong>, with offices in the City, Canary Wharf and Croydon.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Dataset</th><th>Business question</th><th>State</th></tr></thead>
+<tbody>
+<tr><td>Procurement fraud and accounts payable</td><td>Can AI find suspicious payment patterns by joining invoices, orders, receipts, approvals and bank details?</td><td class="done">Built 20 Oct 2026 (<code>datasets/procurement/</code>)</td></tr>
+<tr><td>Regulatory reporting and data lineage</td><td>Can AI trace a reported figure to its source and detect a change that makes the report wrong?</td><td class="done">Built 20 Oct 2026 (<code>datasets/regulatory_reporting/</code>)</td></tr>
+<tr><td>AML transaction monitoring</td><td>Can AI prioritise alerts and link related transactions without missing known patterns?</td><td class="done">Built 20 Oct 2026 (<code>datasets/aml/</code>)</td></tr>
+<tr><td>Insurance claims</td><td>Can AI apply policy terms and calculate settlements correctly?</td><td class="done">Built 20 Oct 2026 (this folder)</td></tr>
+<tr><td>SME lending</td><td>Can AI separate a calculation, a policy rule and a credit judgement?</td><td class="todo">Next</td></tr>
+<tr><td>Treasury liquidity</td><td>Can AI keep base-case and stressed figures apart?</td><td class="todo">Not started</td></tr>
+</tbody></table></div>
+
+<h2 id="why">Decisions and their reasons</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Decision (20 Oct 2026)</th><th>Reason</th></tr></thead>
+<tbody>
+<tr><td>Data must feel authentic: real UK formats, conventions and workflows, with every person, firm and account fictional</td><td>Readers in financial services will dismiss data that looks fake.</td></tr>
+<tr><td>Data is use-agnostic</td><td>The same data serves AI tests, demos, dashboards, teaching and LinkedIn posts. Anything specific to one use goes in a use pack.</td></tr>
+<tr><td>Answers are kept in separate <code>_truth_</code> tables and files, never as flags on business rows</td><td>The data can be shared without revealing what to look for.</td></tr>
+<tr><td>Every planted set includes legitimate records that look suspicious</td><td>Measures false alarms, not just detection.</td></tr>
+<tr><td>Three role sets: consumer uses, API roles (public, analyst, reviewer) and business roles</td><td>Controls who sees the rules and the answers. See <code>docs/roles.html</code>.</td></tr>
+<tr><td>Approval limits £5,000, £25,000, £100,000 and £250,000</td><td>Typical for a mid-sized UK firm. Procurement uses them for purchase approvals; insurance claims uses them as settlement authority.</td></tr>
+<tr><td>Each AI test runs twice: tables only, then tables plus rules</td><td>The difference shows how much the AI depends on being told the rules.</td></tr>
+<tr><td>Python generator with a fixed seed, standard library only</td><td>Rebuilds are byte-identical and need nothing installed.</td></tr>
+<tr><td>SQLite database, served by a local Hono Worker using D1, with an htmx data browser on the same port</td><td>One portable file, a simple API for apps, and a way to browse the data without tools.</td></tr>
+<tr><td>Each dataset folder is fully self-contained: its own generator, API, documents, data and keys</td><td>With six datasets, shared folders would mix documents from different datasets and cause confusion. The cost is that shared code is copied, so a fix in one dataset must be copied to the others by hand.</td></tr>
+<tr><td>One firm-wide staff register: everyone at Thameside has one name, job and office, and a person who appears in several datasets is the same person in each</td><td>The datasets describe one firm. Before the register, each dataset drew names in the same order, so eleven people held different jobs in different datasets. Each dataset keeps an identical copy in <code>generator/common/staff_register.py</code>, and the build checks its staff against it.</td></tr>
+<tr><td>Each dataset has a business story: the firm's current situation, with every figure calculated from the data and every claim checked by the build</td><td>Readers get a situation they recognise, and the planted problems have believable causes. The story sets up pressures but never points to a case.</td></tr>
+<tr><td>Each planted case and test question is tagged with its appraisal types (reviewer-only)</td><td>Results can be scored by kind of analysis. Tags are hidden from the AI under test because naming the analysis hints at the answer.</td></tr>
+<tr><td>Answer-key file named <code>planted-cases.md</code>; use packs served by the API at <code>/packs</code> and in the browser</td><td>The file records the planted cases rather than answering questions. Packs are served by role as <code>docs/roles.html</code> describes: analyst sees every file except answer files, reviewer sees everything.</td></tr>
+<tr><td>Ready for publishing on GitHub (21 Oct 2026): each dataset has a generated <code>README.md</code> and HTML versions of its Markdown documents; answer files carry a canary marker; data and documents under CC BY 4.0, code under MIT</td><td>Readers meet the datasets on GitHub, as a download or on GitHub Pages, and every page must work in all three. The canary lets AI developers keep the public answers out of training data. The shared step that does this is <code>generator/common/publish.py</code>.</td></tr>
+<tr><td>Every document has a footer giving its name, version, date, purpose and dataset</td><td>Copies of documents in different datasets can be told apart, and the newest version identified.</td></tr>
+<tr><td>Documents in HTML; generated documents rebuilt with the data</td><td>Readable in a browser and servable by the Worker; figures always match the data.</td></tr>
+</tbody></table></div>
+
+<h3>Decisions for this dataset</h3>
+<div class="table-wrap"><table>
+<thead><tr><th>Decision (20 Oct 2026)</th><th>Reason</th></tr></thead>
+<tbody>
+<tr><td>The insurer is Thameside Insurance, the group's general insurer, selling home and motor policies in London and the South East. The data is every claim notified from 1 to 30 September 2026, extracted at 18:00 on Friday 16 October</td><td>The brief's scenario. A month keeps the primary table near 100 rows. Two weeks after the month leave simple claims settled and larger ones open, so both final and provisional figures appear.</td></tr>
+<tr><td>The policy wording is a lookup table, <code>policy_clauses</code>, one row per clause; the claims procedures are in <code>_meta_rules</code></td><td>The brief asks which clause supports each decision. Every role can read the wording; only the analyst run also sees the procedures, so the two runs differ.</td></tr>
+<tr><td>Each policy shows the date it was first taken out as well as the current period of insurance</td><td>A renewal and a policy bought after the loss look the same on the current dates alone. The data needs both to tell them apart.</td></tr>
+<tr><td>The proposed settlement is always the agreed items less the recorded excess, and each payment shows the excess it deducted. The build checks both</td><td>The arithmetic is right on every claim, so a planted error is in applying the terms, which is what the study measures. An excess taken twice can be found from the payments.</td></tr>
+<tr><td>Settlement authority reuses the group's limits: Claims Handler £5,000, Team Leader £25,000, Claims Manager £100,000, Head of Claims £250,000. Declines need a Team Leader or above</td><td>One set of limits across the firm. The build checks every approval against it.</td></tr>
+<tr><td>Policyholders and suppliers are identified by reference only. Postcodes, crime references and car models follow real formats</td><td>No real person or firm can be named in a claim that looks false, and no supplier name needs a Companies House check.</td></tr>
+<tr><td>Ten new people, TFG-041 to TFG-050, added to the staff register and copied to every dataset</td><td>No existing person works in claims. The names come from outside the name pools in <code>people.py</code>, so the other datasets do not change. Each was checked against the register (no shared first name or surname) and against Companies House officers on 20 Oct 2026: every name has namesakes, none linked to an insurer or to a Thameside company. No company named Thameside Insurance is registered.</td></tr>
+<tr><td>No new appraisal type</td><td>A3 Policy compliance and S1 Calculation cover applying the wording and the settlement arithmetic. The "Used in" column of <code>appraisal-types.html</code> was updated in every copy (version 1.3).</td></tr>
+<tr><td>Port 8849 for this dataset's Worker</td><td>8787, 8846, 8847 and 8848 are taken.</td></tr>
+</tbody></table></div>
+
+<h2 id="where">How the folder is organised</h2>
+<p>Everything this dataset uses is in <code>datasets/insurance_claims/</code>. Paths below are relative to it.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Path</th><th>Holds</th><th>Written by</th></tr></thead>
+<tbody>
+<tr><td><code>docs/</code></td><td><code>about.html</code>, <code>spec.md</code> and <code>planted-cases.md</code> (generated); <code>roles.html</code>, <code>appraisal-types.html</code> and this page (hand-written)</td><td>Build and hand</td></tr>
+<tr><td><code>generator/build.py</code></td><td>Builds the data, runs the checks, writes the generated documents</td><td>Hand</td></tr>
+<tr><td><code>generator/scenario.py</code></td><td>This dataset's tables, normal data, planted cases, rules and checks</td><td>Hand</td></tr>
+<tr><td><code>generator/write_docs.py</code></td><td>Writes the generated documents and the use pack</td><td>Hand</td></tr>
+<tr><td><code>generator/common/</code></td><td>Firm and seed, London names, UK formats and calendar, standard tables, page layout and footers</td><td>Hand; copied to each new dataset</td></tr>
+<tr><td><code>generator/release.py</code></td><td>Version and release date stamped on generated documents</td><td>Hand</td></tr>
+<tr><td><code>db/</code></td><td><code>insurance_claims.sqlite</code>, <code>seed.sql</code>, and the API's database files in <code>v3/</code></td><td>Build and load</td></tr>
+<tr><td><code>packs/</code></td><td>Use packs, for example <code>ai-eval/</code></td><td>Build</td></tr>
+<tr><td><code>api/</code></td><td>The Worker: JSON API (<code>src/index.ts</code>), htmx browser (<code>src/ui.ts</code>), access rules (<code>src/db.ts</code>), settings (<code>wrangler.toml</code>, port 8849), keys (<code>.dev.vars</code>)</td><td>Hand</td></tr>
+</tbody></table></div>
+
+<h2 id="how">How to build, serve and browse</h2>
+<p>From <code>datasets/insurance_claims/</code>:</p>
+<pre>python3 generator/build.py
+cd api
+npm install
+npm run load
+npm run dev</pre>
+<p>Then open <code>http://localhost:8849/ui</code>. The documents are served at <code>/docs/about</code>, <code>/docs/method</code>,
+<code>/docs/roles</code> and <code>/docs/appraisal-types</code>.</p>
+
+<h2 id="next">How to start the next dataset</h2>
+<ol>
+<li>Copy this folder (or another dataset folder) to <code>datasets/&lt;new-name&gt;/</code>, leaving out <code>db/</code>, <code>packs/</code>, <code>api/node_modules/</code> and <code>api/.dev.vars</code>.</li>
+<li>Rewrite <code>generator/scenario.py</code> for the new scenario: <code>build(rng)</code> returns the tables, rows, facts, rules, cases and case records; <code>checks(con)</code> returns a list of failures.</li>
+<li>Rewrite <code>generator/write_docs.py</code> for the new documents and test questions.</li>
+<li>Set the new name, title, version 1.0 and date in <code>generator/release.py</code>.</li>
+<li>In <code>api/wrangler.toml</code>, set a new name, database name, <code>DATASET</code> and a free port. Create <code>api/.dev.vars</code> with new keys, using <code>api/.dev.vars.example</code>.</li>
+<li>Update the footers and wording of the copied hand-written documents in <code>docs/</code>.</li>
+<li>Check every new firm or person name against Companies House before use.</li>
+<li>Record each case's appraisal types from <code>docs/appraisal-types.html</code> in its <code>appraisal_types</code> column. Add a new type only if no existing one fits, and record it in that document.</li>
+<li>Give each planted case a benign lookalike that its own detection query must not catch, and the lookalike a query of its own.</li>
+<li>Run the build until every check passes, and confirm two builds give the same checksum.</li>
+<li>If you improve anything in <code>generator/common/</code> or <code>api/src/</code>, decide whether to copy the improvement back to the other datasets, and raise their versions.</li>
+<li>Add a card for the new dataset to <code>index.html</code>, the landing page at the project root.</li>
+<li>Add a row for the new dataset to <code>README.md</code> at the project root.</li>
+<li>Keep <code>generator/common/theme.css</code> identical to the other datasets and to <code>theme.css</code> at the project root. The build copies it to <code>docs/theme.css</code>.</li>
+<li>Run <code>python3 check_shared.py</code> from the project root. It confirms the shared files (staff register, table definitions, theme, appraisal types) are identical in every dataset.</li>
+<li>Before publishing, run <code>python3 build_all.py</code> from the project root. It rebuilds every dataset and runs <code>check_shared.py</code>.</li>
+</ol>
+
+<h2 id="standard">The standard every dataset meets</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Part</th><th>Rule</th></tr></thead>
+<tbody>
+<tr><td>Primary table</td><td>About 100 records in a defined period, with a stated extract date.</td></tr>
+<tr><td>Lookup tables</td><td>Reference data the rules depend on, such as limits, codes and people.</td></tr>
+<tr><td><code>_meta_</code> tables</td><td>Dataset facts, table list, data dictionary and business rules. Generated by the build.</td></tr>
+<tr><td><code>_truth_</code> tables</td><td>One row per planted case, and the records each involves. Each case carries a query over business tables that must return exactly its key records; the build fails otherwise.</td></tr>
+<tr><td>Normal data</td><td>Kept clear of every planted pattern, so no normal record triggers a case's query by accident.</td></tr>
+<tr><td>Authenticity</td><td>Real UK formats and conventions for the scenario: for example valid check digits, real numbering by year, Ofcom fiction phone ranges, names reflecting London, working-day calendars, Bank of England rate quotation, UK SIC sectors, references that rise over time.</td></tr>
+<tr><td>Documents</td><td><code>about.html</code>, <code>spec.md</code> (no answers), <code>planted-cases.md</code> (reviewers only), each with the standard footer.</td></tr>
+<tr><td>Footer</td><td>Document name, version, date, purpose and dataset. Generated documents take the version and date from <code>generator/release.py</code>; hand-written ones carry their own. Raise the minor number for corrections and wording, the major number for changes in meaning.</td></tr>
+<tr><td>Use packs</td><td>One folder per use under <code>packs/</code>. The <code>ai-eval</code> pack keeps questions and expected answers in separate files.</td></tr>
+</tbody></table></div>
+
+<h2 id="lessons">Lessons</h2>
+<ul>
+<li>Port 8787, wrangler's default, is used by another Worker on this machine. Give each dataset its own port.</li>
+<li>Random data creates accidental patterns, such as amounts just under a limit or repeated amounts. Exclude them from normal data explicitly, then let the build's case queries prove it.</li>
+<li>Small inconsistencies give planted records away: a reference in a different style, a company number too new for the firm, a Scottish firm with a London phone number. Check planted records against their neighbours.</li>
+<li>Real payment terms mean recent invoices are unpaid at the extract date, so the window must be long enough to show payments.</li>
+<li>In htmx, a form's settings pass down to everything inside it. Use <code>hx-disinherit</code> on filter forms.</li>
+<li>Write explanations from the data at build time, so they always match the records.</li>
+<li>Regulatory reporting: <code>generator/common/dataset.py</code> wrote every REAL with two decimals, so exchange rates lost precision. It now keeps full precision for values that are not whole pence. Procurement still has the old code; its only non-money REAL is a VAT rate, which is unaffected.</li>
+<li>Regulatory reporting: tables that reference each other must be listed in load order, because the build loads with foreign keys on. <code>change_log</code> comes before <code>mapping_rules</code>.</li>
+<li>Regulatory reporting: work out corrected figures from the rules, not from the answer key. The build then shows that fixing every genuine case gives a consistent return.</li>
+<li>AML: when alerts depend on rules, generate them by applying the rules, and make the build fail on any alert that was not planned. Writing alerts by hand lets a payment meet a threshold without an alert, which a reader would take for a planted gap.</li>
+<li>AML: a rule that looks back in time must count transfers from other customers of the same bank as credits, or the money trail breaks at the first internal transfer.</li>
+<li>AML: number alerts after sorting them by the time they were raised. An alert raised a minute after its payment can come after the next payment's alert.</li>
+<li>AML: payment times give records away. A business receiving a Faster Payment from a client at 22:00 looks odd beside its neighbours; normal business payments are kept to working hours.</li>
+<li>Insurance claims: policy renewal dates must leave the current period covering the whole claim month. A policy renewed in early September 2025 would have ended before some September 2026 incidents.</li>
+<li>Insurance claims: an excess larger than the first payment must carry over to the next payment. Taking it only from the first payment under-deducts, and the settlement no longer adds up.</li>
+<li>Insurance claims: drop any payment dated after the extract, then derive each claim's status and reserve from what was paid. Setting the status by hand leaves settled claims with money still owed.</li>
+<li>Insurance claims: pin the dates of planted payments. Random gaps after a planted claim can push a payment past the extract and remove the evidence the case needs.</li>
+<li>Insurance claims: take new register names from outside the name pools in <code>generator/common/people.py</code>. Procurement reserves every register name when it invents supplier contacts, so the first choice of names, drawn from the pools, changed procurement's data. They were replaced before anything was released, and procurement rebuilds to its original checksum.</li>
+<li>Insurance claims: in zsh, a shell loop variable named <code>path</code> replaces <code>PATH</code>, so every command after it fails. Use another name.</li>
+</ul>
+
+<h2 id="open">Open items</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Item</th><th>State</th></tr></thead>
+<tbody>
+<tr><td>Firm name: real companies with similar names exist</td><td>Kept for now; changeable in <code>generator/common/firm.py</code></td></tr>
+<tr><td>SME lending dataset</td><td>Next</td></tr>
+</tbody></table></div>
+</main>
+<footer class="doc-footer"><dl>
+<dt>Document</dt><dd>method.html</dd>
+<dt>Version</dt><dd>1.3</dd>
+<dt>Date</dt><dd>2026-10-21</dd>
+<dt>Purpose</dt><dd>Records how this dataset was built and why, and how to start the next dataset from it</dd>
+<dt>Dataset</dt><dd>Insurance claims</dd>
+</dl></footer>
+<script>if (!/\.html$/.test(location.pathname)) document.querySelectorAll('[data-landing]').forEach(function (a) { a.remove() })</script>
+</body>
+</html>

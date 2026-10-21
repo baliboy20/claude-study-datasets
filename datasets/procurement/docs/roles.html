@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dataset Roles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<header class="masthead"><div class="wrap"><div class="crumbs"><a data-landing href="../../../index.html">All datasets</a><span>›</span><span>Procurement fraud and accounts payable</span><span>›</span><span>Roles</span></div><h1>Roles</h1>
+  <p><span class="status">Agreed 20 October 2026</span></p></div></header>
+<main>
+
+  <p>This document defines three separate sets of roles:</p>
+  <ol class="sets">
+    <li><strong>Consumer uses</strong>: what the datasets will be used for.</li>
+    <li><strong>API access roles</strong>: who may call the API and what each caller can see.</li>
+    <li><strong>Business roles in the data</strong>: the fictional people inside the firm, and what each may do.</li>
+  </ol>
+  <nav class="toc">
+    <a href="#uses">1. Consumer uses</a><a href="#access">2. API access roles</a><a href="#business">3. Business roles</a><a href="#decisions">Decisions</a>
+  </nav>
+
+  <h2 id="uses">1. Consumer uses</h2>
+  <p>Each use reads the same core data. Anything specific to one use goes in a use pack under
+     <code>datasets/&lt;name&gt;/packs/&lt;use&gt;/</code>. A new use adds a pack and does not change the core data.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Use</th><th>What it needs</th><th>Sees the answer key?</th><th>API role</th></tr></thead>
+    <tbody>
+      <tr><td>AI evaluation</td><td>Business tables, plus rules if the test allows it. Test prompts and expected answers come from the <code>ai-eval</code> pack.</td><td>No, for the AI under test. Yes, for the person scoring it.</td><td><code>public</code> or <code>analyst</code> for the AI; <code>reviewer</code> for scoring</td></tr>
+      <tr><td>Demo and teaching apps (for example a Flutter app)</td><td>Business tables and the data dictionary</td><td>No, unless the app reveals answers as a teaching step</td><td><code>analyst</code></td></tr>
+      <tr><td>Dashboards and reporting</td><td>Business tables</td><td>No</td><td><code>public</code></td></tr>
+      <tr><td>LinkedIn illustrations</td><td>Selected rows, totals, and the planted cases with their explanations</td><td>Yes</td><td><code>reviewer</code></td></tr>
+      <tr><td>Data-skills exercises (SQL, Excel, analysis)</td><td>Business tables and the data dictionary. The answer key is released after the exercise.</td><td>Only after the exercise</td><td><code>analyst</code>, then <code>reviewer</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="access">2. API access roles</h2>
+  <p>Locally, the caller chooses a role with an <code>X-Role</code> header plus a dev key held in the Worker's local secrets file. No key means <code>public</code>.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Role</th><th>Business tables</th><th>Data dictionary and rules (<code>_meta_*</code>)</th><th>Answer key (<code>_truth_*</code>)</th><th>Use packs</th></tr></thead>
+    <tbody>
+      <tr><td><code>public</code></td><td>Read</td><td>No</td><td>No</td><td>No</td></tr>
+      <tr><td><code>analyst</code></td><td>Read</td><td>Read</td><td>No</td><td>Read, but answer files are hidden</td></tr>
+      <tr><td><code>reviewer</code></td><td>Read</td><td>Read</td><td>Read</td><td>Read, all files</td></tr>
+    </tbody>
+  </table></div>
+  <p>The API is read-only for every role. You rebuild the data by running the Python generator, not through the API. The plan's <code>admin</code> role is dropped because it would have nothing to do.</p>
+
+  <h2 id="business">3. Business roles in the data (procurement dataset)</h2>
+  <p>The firm's delegated authority policy is below. It becomes the <code>approval_policy</code> table. The limit is the largest single invoice, including VAT, that a role may approve alone.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Role</th><th>Typical job title</th><th>Approval limit (gross)</th><th>Other duties and limits</th></tr></thead>
+    <tbody>
+      <tr><td>Requester</td><td>Any staff member</td><td class="num">£0</td><td>Raises purchase requisitions. Cannot approve.</td></tr>
+      <tr><td>Accounts Payable Assistant</td><td>Accounts Payable Assistant</td><td class="num">£0</td><td>Enters invoices and matches them to POs and goods receipts. Cannot approve. Proposes the payment run.</td></tr>
+      <tr><td>Procurement Officer</td><td>Procurement Officer</td><td class="num">£0</td><td>Raises POs, onboards suppliers, and requests bank-detail changes. Cannot approve invoices.</td></tr>
+      <tr><td>Budget Holder</td><td>Team or cost-centre manager</td><td class="num">£5,000</td><td>Approves invoices against their own cost centre only.</td></tr>
+      <tr><td>Department Head</td><td>Head of IT, Head of Facilities and similar</td><td class="num">£25,000</td><td>Approves invoices for their department.</td></tr>
+      <tr><td>Finance Director</td><td>Finance Director</td><td class="num">£100,000</td><td>Approves any department. Is one of the two people who release the payment run.</td></tr>
+      <tr><td>Head of Finance Operations</td><td>Head of Finance Operations</td><td class="num">£25,000</td><td>Verifies bank-detail changes by calling the supplier back. Is the other person who releases the payment run.</td></tr>
+      <tr><td>Chief Financial Officer</td><td>Chief Financial Officer</td><td class="num">£250,000</td><td>Above £250,000, a second CFO-level signature from the CEO is required.</td></tr>
+      <tr><td>Chief Executive Officer</td><td>Chief Executive Officer</td><td class="num">£250,000</td><td>Co-signs any invoice above £250,000 with the CFO.</td></tr>
+      <tr><td>Supplier contact</td><td>External person at a supplier</td><td class="num">Not applicable</td><td>Submits invoices and asks for bank-detail changes.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Segregation-of-duties rules, which the planted cases test:</p>
+  <ul>
+    <li>The person who raises a PO may not approve invoices against it.</li>
+    <li>A bank-detail change must be verified by someone other than the person who requested it, by calling the supplier back on a number already on file.</li>
+    <li>Each payment run needs two releasers. One is the Finance Director and the other is the Head of Finance Operations.</li>
+    <li>Splitting one purchase into several invoices to stay under an approval limit is not allowed.</li>
+  </ul>
+
+  <h2 id="decisions">Decisions (agreed 20 October 2026)</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>#</th><th>Decision</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>The fictional firm is "Thameside Financial Group", subject to a Companies House check.</td></tr>
+      <tr><td>2</td><td>Approval limits are £5,000, £25,000, £100,000 and £250,000.</td></tr>
+      <tr><td>3</td><td>Each AI test runs twice: once as <code>public</code> (tables only) and once as <code>analyst</code> (tables plus rules).</td></tr>
+      <tr><td>4</td><td>There is no <code>admin</code> role. Rebuilds happen through the generator.</td></tr>
+    </tbody>
+  </table></div>
+</main>
+<footer class="doc-footer"><dl>
+<dt>Document</dt><dd>roles.html</dd>
+<dt>Version</dt><dd>1.1</dd>
+<dt>Date</dt><dd>2026-10-20</dd>
+<dt>Purpose</dt><dd>Defines who uses the data, what each API role may see, and the business roles inside the fictional firm</dd>
+<dt>Dataset</dt><dd>Procurement fraud and accounts payable</dd>
+</dl></footer>
+<script>if (!/\.html$/.test(location.pathname)) document.querySelectorAll('[data-landing]').forEach(function (a) { a.remove() })</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+# Dependencies and local tool state
+node_modules/
+.wrangler/
+datasets/*/db/v3/
+__pycache__/
+
+# Local secrets: each API creates .dev.vars from .dev.vars.example on first run
+.dev.vars
+
+# Not published: the original brief (see README)
+brief01/
+
+# Operating system and editor files
+.DS_Store
+*.log

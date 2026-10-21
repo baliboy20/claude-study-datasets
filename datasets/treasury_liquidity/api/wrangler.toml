@@ -1,0 +1,23 @@
+# Local Worker for the treasury liquidity dataset. Role keys are in .dev.vars beside this file.
+# The D1 database is persisted in ../db via --persist-to (see the scripts in package.json).
+name = "study-data-treasury-liquidity"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+
+[vars]
+DATASET = "treasury_liquidity"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "treasury_liquidity"
+database_id = "00000000-0000-0000-0000-000000000051"
+
+[dev]
+port = 8851
+inspector_port = 9851  # debugger port; fixed so several datasets can run at once
+
+# Lets the Worker import docs/theme.css and the packs' Markdown files as text.
+[[rules]]
+type = "Text"
+globs = ["**/*.css", "**/*.md"]
+fallthrough = true

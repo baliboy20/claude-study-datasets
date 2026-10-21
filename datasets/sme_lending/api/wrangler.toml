@@ -1,0 +1,23 @@
+# Local Worker for the SME lending dataset. Role keys are in .dev.vars beside this file.
+# The D1 database is persisted in ../db via --persist-to (see the scripts in package.json).
+name = "study-data-sme-lending"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+
+[vars]
+DATASET = "sme_lending"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sme_lending"
+database_id = "00000000-0000-0000-0000-000000000050"
+
+[dev]
+port = 8850
+inspector_port = 9850  # debugger port; fixed so several datasets can run at once
+
+# Lets the Worker import docs/theme.css and the packs' Markdown files as text.
+[[rules]]
+type = "Text"
+globs = ["**/*.css", "**/*.md"]
+fallthrough = true

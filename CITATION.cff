@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use these datasets in an article or study, please cite them as below."
+title: "Synthetic UK financial-services study datasets"
+abstract: >-
+  Six synthetic datasets for testing and illustrating AI in UK banking, insurance and finance:
+  procurement fraud, regulatory reporting, AML transaction monitoring, insurance claims, SME lending
+  and treasury liquidity. Each has about 100 primary records, business rules, planted cases with an
+  answer key, and test questions. All people, firms and accounts are fictional.
+type: dataset
+authors:
+  - given-names: William
+    family-names: Paulton
+version: "1.0"
+date-released: "2026-10-21"
+license:
+  - CC-BY-4.0
+  - MIT
+keywords:
+  - synthetic data
+  - financial services
+  - AI evaluation
+  - anti-money laundering
+  - regulatory reporting
+  - insurance claims

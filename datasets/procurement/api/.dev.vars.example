@@ -1,0 +1,4 @@
+# Example role keys for the local data browser and API. For local use only: do not reuse them anywhere shared.
+# npm run load / npm run dev copy this file to .dev.vars the first time they run.
+ANALYST_KEY="change-me-analyst"
+REVIEWER_KEY="change-me-reviewer"
