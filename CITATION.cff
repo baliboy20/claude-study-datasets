@@ -10,6 +10,8 @@ type: dataset
 authors:
   - given-names: William
     family-names: Paulton
+url: "https://baliboy20.github.io/claude-study-datasets/"
+repository-code: "https://github.com/baliboy20/claude-study-datasets"
 version: "1.0"
 date-released: "2026-10-21"
 license:

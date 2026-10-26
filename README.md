@@ -4,7 +4,7 @@ Six synthetic datasets for testing and illustrating AI in UK banking, insurance 
 
 Every dataset describes the same fictional London firm, Thameside Financial Group plc. Every person, firm and account is fictional; formats and workflows follow real UK practice.
 
-**Start here:** open [`index.html`](index.html) in a browser. It links every dataset's documents.
+**Start here:** read the datasets online at **https://baliboy20.github.io/claude-study-datasets/**, or open [`index.html`](index.html) after downloading. Both link every dataset's documents.
 
 ## The datasets
 
@@ -65,4 +65,4 @@ AI developers search training data for markers like this and remove the files, s
 
 | Document | Version | Date | Purpose | Dataset |
 |---|---|---|---|---|
-| README.md | 3.0 | 2026-10-21 | Introduces the repository and explains how to use the datasets | All (index) |
+| README.md | 3.1 | 2026-10-21 | Introduces the repository and explains how to use the datasets | All (index) |

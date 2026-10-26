@@ -6,6 +6,7 @@ It holds 12 planted cases: 9 genuine problems and 3 records that look suspicious
 
 ## Start here
 
+- **Online:** [Procurement fraud and accounts payable](https://baliboy20.github.io/claude-study-datasets/datasets/procurement/docs/about.html)
 - **Downloaded:** open `docs/about.html` in a browser, or `index.html` at the project root for every dataset.
 
 ## What is in this folder

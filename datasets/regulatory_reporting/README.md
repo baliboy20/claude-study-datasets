@@ -6,6 +6,7 @@ It holds 12 planted cases: 7 genuine problems and 5 records that look suspicious
 
 ## Start here
 
+- **Online:** [Regulatory reporting and data lineage](https://baliboy20.github.io/claude-study-datasets/datasets/regulatory_reporting/docs/about.html)
 - **Downloaded:** open `docs/about.html` in a browser, or `index.html` at the project root for every dataset.
 
 ## What is in this folder

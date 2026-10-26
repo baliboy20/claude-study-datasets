@@ -6,6 +6,7 @@ It holds 12 planted cases: 6 genuine problems and 6 records that look suspicious
 
 ## Start here
 
+- **Online:** [Insurance claims](https://baliboy20.github.io/claude-study-datasets/datasets/insurance_claims/docs/about.html)
 - **Downloaded:** open `docs/about.html` in a browser, or `index.html` at the project root for every dataset.
 
 ## What is in this folder

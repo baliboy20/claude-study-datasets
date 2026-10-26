@@ -6,6 +6,7 @@ It holds 12 planted cases: 5 genuine problems and 7 records that look suspicious
 
 ## Start here
 
+- **Online:** [AML transaction monitoring](https://baliboy20.github.io/claude-study-datasets/datasets/aml/docs/about.html)
 - **Downloaded:** open `docs/about.html` in a browser, or `index.html` at the project root for every dataset.
 
 ## What is in this folder

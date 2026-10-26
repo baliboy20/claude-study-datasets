@@ -7,7 +7,7 @@ FIRM_SHORT = "Thameside"
 EMAIL_DOMAIN = "thamesidefg.co.uk"
 
 # Address of the published documents (GitHub Pages), for links in README files. Empty until published.
-SITE_URL = ""
+SITE_URL = "https://baliboy20.github.io/claude-study-datasets"
 
 OFFICES = {
     "City": "Head office, London EC2V",

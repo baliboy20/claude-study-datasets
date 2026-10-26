@@ -456,10 +456,13 @@ class Builder:
         p, t = c["pol"], c["claim_type"]
         if p["product"].startswith("Home"):
             if t == "Escape of water":
-                return p["excess_escape_of_water_gbp"]
+                eow = p["excess_escape_of_water_gbp"]
+                return eow * 2 if c["section"] == "Buildings and contents" else eow
             if t == "Subsidence":
                 return 1_000.0
-            return p["excess_standard_gbp"]
+            base = p["excess_standard_gbp"]
+            # Clause H-1.2: a claim under both Buildings and Contents carries the excess for each section.
+            return base * 2 if c["section"] == "Buildings and contents" else base
         if t == "Windscreen - repair":
             return 0.0
         if t == "Windscreen - replacement":
@@ -488,7 +491,7 @@ class Builder:
     def decide(self, c, d, approver=None):
         """Records the proposed settlement as the agreed items less the excess, and who approved it."""
         agreed = sum(i["agreed_amount_gbp"] or 0 for i in c["items"])
-        c["proposed"] = r2(agreed - c["excess"])
+        c["proposed"] = r2(max(0.0, agreed - c["excess"]))  # never negative: an excess above the claim leaves nothing to pay
         c["approved_by"] = approver or self.approver(c["proposed"], c["handler"])
         c["decision_date"] = d
 
@@ -1531,7 +1534,7 @@ def checks(con):
     for cid_, prop, ex, agreed in q("""SELECT c.claim_id, c.proposed_settlement_gbp, c.excess_gbp,
                                        (SELECT sum(agreed_amount_gbp) FROM claim_items i WHERE i.claim_id = c.claim_id)
                                        FROM claims c WHERE c.proposed_settlement_gbp IS NOT NULL"""):
-        if round(agreed - ex, 2) != prop:
+        if round(max(0.0, agreed - ex), 2) != prop:
             errors.append(f"{cid_}: proposed {prop} is not agreed {agreed} less excess {ex}")
     for cid_, status, agreed, gross, reserve, prop in q("""SELECT c.claim_id, c.claim_status,
                                        coalesce((SELECT sum(agreed_amount_gbp) FROM claim_items i WHERE i.claim_id = c.claim_id), 0),
